@@ -1,0 +1,18 @@
+{
+  "kvkk": [
+    { "key": "has_kvkk_text",           "label": "KVKK aydınlatma metni mevcut",      "weight": 20 },
+    { "key": "has_privacy_policy",       "label": "Gizlilik politikası mevcut",         "weight": 15 },
+    { "key": "has_consent_mechanism",    "label": "Açık rıza mekanizması mevcut",       "weight": 20 },
+    { "key": "has_user_rights",          "label": "Veri sahibi hakları belirtilmiş",    "weight": 20 },
+    { "key": "has_data_processing_info", "label": "Veri işleme amaçları belirtilmiş",  "weight": 15 },
+    { "key": "has_retention_info",       "label": "Veri saklama süresi belirtilmiş",   "weight": 10 }
+  ],
+  "gdpr": [
+    { "key": "has_privacy_policy",       "label": "Gizlilik politikası mevcut",         "weight": 20 },
+    { "key": "has_cookie_policy",        "label": "Çerez politikası mevcut",            "weight": 20 },
+    { "key": "has_consent_mechanism",    "label": "Açık rıza mekanizması mevcut",       "weight": 20 },
+    { "key": "has_user_rights",          "label": "Kullanıcı hakları belirtilmiş",      "weight": 20 },
+    { "key": "has_retention_info",       "label": "Veri saklama süresi belirtilmiş",   "weight": 10 },
+    { "key": "has_data_processing_info", "label": "Veri işleme amaçları belirtilmiş",  "weight": 10 }
+  ]
+}

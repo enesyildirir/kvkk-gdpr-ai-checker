@@ -1,0 +1,19 @@
+# Ortam
+.env
+.venv/
+
+# Veritabanı
+instance/app.db
+
+# Raporlar
+reports/*
+!reports/.gitkeep
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
