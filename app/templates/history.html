@@ -1,0 +1,460 @@
+{# -----------------------------------------------------------
+   history.html — Geçmiş taramalar
+
+   Sözleşme:
+   - {{ scans }} : scan objelerinin listesi
+                   (her birinde id, url, kvkk_score, gdpr_score,
+                    risk_level, created_at)
+   ----------------------------------------------------------- #}
+{% extends "base.html" %}
+
+{% block title %}Geçmiş Taramalar · KVKK / GDPR AI Checker{% endblock %}
+
+{# Navbar'daki "Geçmiş" linkini aktif yap #}
+{% block nav_history_active %}active{% endblock %}
+
+{% block content %}
+
+  <div class="page-header animate-in">
+    <div>
+      <span class="hero-eyebrow" style="margin-bottom: var(--space-3);">
+        <span aria-hidden="true">●</span>
+        Arşiv
+      </span>
+      <h1 style="font-size: clamp(1.5rem, 3vw, 2.25rem); margin-bottom: var(--space-2);">
+        Geçmiş Taramalar
+      </h1>
+      <p class="text-soft mb-0">
+        Daha önce yaptığınız tüm uyumluluk taramalarını burada bulabilirsiniz.
+      </p>
+    </div>
+
+    <a href="/" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Yeni Tarama
+    </a>
+  </div>
+
+  {# ---------- Boş durum ---------- #}
+  {% if not scans or scans|length == 0 %}
+
+    <div class="empty-card animate-in delay-1">
+      <div class="empty-illustration" aria-hidden="true">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <h3>Henüz bir tarama yok</h3>
+      <p class="text-soft">Anasayfadan bir URL girerek ilk taramanızı başlatabilirsiniz.</p>
+      <a href="/" class="btn btn-primary mt-4">Hemen Başla</a>
+    </div>
+
+  {% else %}
+
+    {# ---------- Üst özet şeridi ---------- #}
+    <div class="stats-strip animate-in delay-1">
+      <div class="stat">
+        <div class="stat-label">Toplam Tarama</div>
+        <div class="stat-value">{{ scans|length }}</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Ortalama KVKK</div>
+        <div class="stat-value">
+          {% set kvkk_total = scans|sum(attribute='kvkk_score') %}
+          {{ (kvkk_total / scans|length)|round(0, 'common')|int }}<span class="unit">/100</span>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Ortalama GDPR</div>
+        <div class="stat-value">
+          {% set gdpr_total = scans|sum(attribute='gdpr_score') %}
+          {{ (gdpr_total / scans|length)|round(0, 'common')|int }}<span class="unit">/100</span>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Filtre çubuğu (JS ile devreye girer) ---------- #}
+    <div class="filter-bar animate-in delay-2 no-print" id="filter-bar" hidden>
+      <div class="filter-search">
+        <svg class="filter-search-icon" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="search"
+          id="filter-input"
+          class="form-input filter-input"
+          placeholder="URL'de ara…"
+          autocomplete="off"
+          aria-label="URL'de ara"
+        />
+        <button type="button" id="filter-clear" class="filter-clear" aria-label="Aramayı temizle" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="filter-pills" role="radiogroup" aria-label="Risk seviyesine göre filtrele">
+        <button type="button" class="filter-pill is-active" data-filter-risk="all"  role="radio" aria-checked="true">Tümü</button>
+        <button type="button" class="filter-pill"          data-filter-risk="low"   role="radio" aria-checked="false">Düşük</button>
+        <button type="button" class="filter-pill"          data-filter-risk="medium" role="radio" aria-checked="false">Orta</button>
+        <button type="button" class="filter-pill"          data-filter-risk="high"  role="radio" aria-checked="false">Yüksek</button>
+      </div>
+
+      <div class="filter-sort">
+        <label for="sort-select" class="visually-hidden">Sıralama</label>
+        <select id="sort-select" class="form-select filter-select" aria-label="Sıralama ölçütü">
+          <option value="date-desc">En yeni önce</option>
+          <option value="date-asc">En eski önce</option>
+          <option value="kvkk-asc">KVKK skoru (düşük→yüksek)</option>
+          <option value="kvkk-desc">KVKK skoru (yüksek→düşük)</option>
+          <option value="gdpr-asc">GDPR skoru (düşük→yüksek)</option>
+          <option value="gdpr-desc">GDPR skoru (yüksek→düşük)</option>
+        </select>
+      </div>
+    </div>
+
+    {# Filtre sonuç sayacı #}
+    <div id="filter-summary" class="filter-summary no-print" hidden aria-live="polite"></div>
+
+    {# Filtre eşleşmediğinde gösterilecek boş durum #}
+    <div id="no-results" class="empty-state no-print" hidden>
+      <p class="mb-0 text-soft">Arama veya filtre kriterlerine uyan kayıt bulunamadı.</p>
+    </div>
+
+    {# ---------- Masaüstü tablosu ---------- #}
+    <div class="table-wrap animate-in delay-2 hide-on-mobile" id="table-wrap">
+      <table class="table" role="table" aria-label="Geçmiş taramalar tablosu">
+        <thead>
+          <tr>
+            <th scope="col">URL</th>
+            <th scope="col">Tarih</th>
+            <th scope="col" style="text-align:center;">KVKK</th>
+            <th scope="col" style="text-align:center;">GDPR</th>
+            <th scope="col">Risk</th>
+            <th scope="col" style="text-align:right;">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="scans-tbody">
+          {% for scan in scans %}
+            {# Risk normalize — JS'in tek bir değer üzerinden filtre edebilmesi için #}
+            {% set rl_raw = (scan.risk_level or '')|lower %}
+            {% if rl_raw in ['düşük', 'dusuk', 'low'] %}{% set rl_norm = 'low' %}
+            {% elif rl_raw in ['orta', 'medium'] %}{% set rl_norm = 'medium' %}
+            {% elif rl_raw in ['yüksek', 'yuksek', 'high'] %}{% set rl_norm = 'high' %}
+            {% else %}{% set rl_norm = '' %}{% endif %}
+
+            {# Tarih için ISO benzeri sıralanabilir string #}
+            {% if scan.created_at.strftime is defined %}
+              {% set date_sort = scan.created_at.strftime('%Y%m%d%H%M%S') %}
+              {% set date_label = scan.created_at.strftime('%d.%m.%Y %H:%M') %}
+            {% else %}
+              {% set date_sort = scan.created_at|string %}
+              {% set date_label = scan.created_at %}
+            {% endif %}
+
+            <tr class="scan-row"
+                data-url="{{ scan.url|lower }}"
+                data-risk="{{ rl_norm }}"
+                data-kvkk="{{ scan.kvkk_score if scan.kvkk_score is not none else -1 }}"
+                data-gdpr="{{ scan.gdpr_score if scan.gdpr_score is not none else -1 }}"
+                data-date="{{ date_sort }}">
+              <td class="url-cell" title="{{ scan.url }}">
+                {{ scan.url }}
+              </td>
+              <td class="text-soft" style="white-space: nowrap;">
+                {{ date_label }}
+              </td>
+              <td style="text-align:center;">
+                {% set k = scan.kvkk_score or 0 %}
+                <span class="score-chip {% if k >= 75 %}is-good{% elif k >= 50 %}is-mid{% else %}is-bad{% endif %}">
+                  {{ scan.kvkk_score if scan.kvkk_score is not none else '—' }}
+                </span>
+              </td>
+              <td style="text-align:center;">
+                {% set g = scan.gdpr_score or 0 %}
+                <span class="score-chip {% if g >= 75 %}is-good{% elif g >= 50 %}is-mid{% else %}is-bad{% endif %}">
+                  {{ scan.gdpr_score if scan.gdpr_score is not none else '—' }}
+                </span>
+              </td>
+              <td>
+                {% if rl_norm == 'low' %}
+                  <span class="risk-pill risk-low">Düşük</span>
+                {% elif rl_norm == 'medium' %}
+                  <span class="risk-pill risk-medium">Orta</span>
+                {% elif rl_norm == 'high' %}
+                  <span class="risk-pill risk-high">Yüksek</span>
+                {% else %}
+                  <span class="badge badge-neutral">—</span>
+                {% endif %}
+              </td>
+              <td style="text-align:right;">
+                <a href="/scan/{{ scan.id }}" class="btn btn-ghost" style="padding: 8px 12px;">
+                  Detay
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {# ---------- Mobil kart listesi ---------- #}
+    <div class="scan-cards show-on-mobile animate-in delay-2" id="scans-cards">
+      {% for scan in scans %}
+        {% set rl_raw = (scan.risk_level or '')|lower %}
+        {% if rl_raw in ['düşük', 'dusuk', 'low'] %}{% set rl_norm = 'low' %}
+        {% elif rl_raw in ['orta', 'medium'] %}{% set rl_norm = 'medium' %}
+        {% elif rl_raw in ['yüksek', 'yuksek', 'high'] %}{% set rl_norm = 'high' %}
+        {% else %}{% set rl_norm = '' %}{% endif %}
+
+        {% if scan.created_at.strftime is defined %}
+          {% set date_sort = scan.created_at.strftime('%Y%m%d%H%M%S') %}
+        {% else %}
+          {% set date_sort = scan.created_at|string %}
+        {% endif %}
+
+        <a href="/scan/{{ scan.id }}" class="scan-card card card-hover scan-row"
+           data-url="{{ scan.url|lower }}"
+           data-risk="{{ rl_norm }}"
+           data-kvkk="{{ scan.kvkk_score if scan.kvkk_score is not none else -1 }}"
+           data-gdpr="{{ scan.gdpr_score if scan.gdpr_score is not none else -1 }}"
+           data-date="{{ date_sort }}">
+          <div class="scan-card-head">
+            <div class="scan-card-url" title="{{ scan.url }}">{{ scan.url }}</div>
+            {% if rl_norm == 'low' %}
+              <span class="risk-pill risk-low">Düşük</span>
+            {% elif rl_norm == 'medium' %}
+              <span class="risk-pill risk-medium">Orta</span>
+            {% elif rl_norm == 'high' %}
+              <span class="risk-pill risk-high">Yüksek</span>
+            {% endif %}
+          </div>
+          <div class="scan-card-body">
+            <div>
+              <small class="text-muted">KVKK</small>
+              <strong>{{ scan.kvkk_score if scan.kvkk_score is not none else '—' }}/100</strong>
+            </div>
+            <div>
+              <small class="text-muted">GDPR</small>
+              <strong>{{ scan.gdpr_score if scan.gdpr_score is not none else '—' }}/100</strong>
+            </div>
+            <div>
+              <small class="text-muted">Tarih</small>
+              <strong>
+                {% if scan.created_at.strftime is defined %}
+                  {{ scan.created_at.strftime('%d.%m.%Y') }}
+                {% else %}
+                  {{ scan.created_at }}
+                {% endif %}
+              </strong>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+{% endblock %}
+
+
+{# ---------------- SAYFA-ÖZEL JS: filtre / arama / sıralama ---------------- #}
+{% block scripts %}
+{% if scans and scans|length > 0 %}
+<script>
+(function () {
+  'use strict';
+
+  /* ----- DOM referansları ----- */
+  const filterBar    = document.getElementById('filter-bar');
+  const input        = document.getElementById('filter-input');
+  const clearBtn     = document.getElementById('filter-clear');
+  const pills        = document.querySelectorAll('.filter-pill');
+  const sortSelect   = document.getElementById('sort-select');
+  const summary      = document.getElementById('filter-summary');
+  const noResults    = document.getElementById('no-results');
+  const tableWrap    = document.getElementById('table-wrap');
+  const tbody        = document.getElementById('scans-tbody');
+  const cardsWrap    = document.getElementById('scans-cards');
+
+  if (!filterBar) return;
+
+  /* JS çalıştığına göre filtre çubuğunu görünür yap (progressive enhancement) */
+  filterBar.hidden  = false;
+  summary.hidden    = false;
+
+  const rows  = Array.from(tbody ? tbody.querySelectorAll('.scan-row') : []);
+  const cards = Array.from(cardsWrap ? cardsWrap.querySelectorAll('.scan-row') : []);
+  const allItems = rows.concat(cards);
+  const totalCount = rows.length || cards.length;  // tablo ve kartlar aynı veriyi gösteriyor
+
+  /* ----- Durum (state) ----- */
+  const state = {
+    query: '',
+    risk:  'all',
+    sort:  'date-desc'
+  };
+
+  /* ----- Filtreleme + sıralama + sayım ----- */
+  function applyFilters() {
+    const q = state.query.trim().toLowerCase();
+    let visibleCount = 0;
+
+    // Önce göster/gizle
+    allItems.forEach(el => {
+      const url    = el.dataset.url  || '';
+      const risk   = el.dataset.risk || '';
+
+      const matchesQuery = !q || url.indexOf(q) !== -1;
+      const matchesRisk  = state.risk === 'all' || risk === state.risk;
+      const visible      = matchesQuery && matchesRisk;
+
+      el.style.display = visible ? '' : 'none';
+    });
+
+    // Görünür satır sayısı (tek tarafı sayalım — tablo ve kart aynı veriyi gösteriyor)
+    const referenceList = rows.length > 0 ? rows : cards;
+    visibleCount = referenceList.filter(el => el.style.display !== 'none').length;
+
+    // Sıralama
+    sortItems();
+
+    // Özet ve boş durum
+    updateSummary(visibleCount);
+  }
+
+  function sortItems() {
+    const [field, dir] = state.sort.split('-');
+    const factor = dir === 'asc' ? 1 : -1;
+
+    const compare = (a, b) => {
+      const av = (a.dataset[field] || '').toString();
+      const bv = (b.dataset[field] || '').toString();
+
+      // date alanı string olarak da numerik sıralanır (YYYYMMDDhhmmss)
+      // kvkk ve gdpr numerik
+      if (field === 'kvkk' || field === 'gdpr') {
+        return (parseFloat(av) - parseFloat(bv)) * factor;
+      }
+      // string karşılaştırma (date sortable string)
+      if (av < bv) return -1 * factor;
+      if (av > bv) return  1 * factor;
+      return 0;
+    };
+
+    if (tbody) {
+      rows.slice().sort(compare).forEach(r => tbody.appendChild(r));
+    }
+    if (cardsWrap) {
+      cards.slice().sort(compare).forEach(c => cardsWrap.appendChild(c));
+    }
+  }
+
+  function updateSummary(visibleCount) {
+    const filtered = state.query.trim() !== '' || state.risk !== 'all';
+
+    if (visibleCount === 0) {
+      noResults.hidden  = false;
+      if (tableWrap) tableWrap.style.display = 'none';
+      if (cardsWrap) cardsWrap.style.display = 'none';
+      summary.textContent = '';
+      summary.hidden = true;
+      return;
+    }
+
+    noResults.hidden = true;
+    if (tableWrap) tableWrap.style.display = '';
+    if (cardsWrap) cardsWrap.style.display = '';
+
+    if (filtered) {
+      summary.hidden = false;
+      summary.innerHTML =
+        '<strong>' + visibleCount + '</strong> kayıt gösteriliyor ' +
+        '<span class="text-muted">(toplam ' + totalCount + ')</span>';
+    } else {
+      summary.hidden = true;
+      summary.textContent = '';
+    }
+  }
+
+  /* ----- Olay dinleyicileri ----- */
+
+  // Arama (debounced — kullanıcı hızlı yazarken 120ms bekle)
+  let debounceTimer = null;
+  input.addEventListener('input', function () {
+    clearBtn.hidden = input.value.length === 0;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      state.query = input.value;
+      applyFilters();
+    }, 120);
+  });
+
+  // Aramayı temizle
+  clearBtn.addEventListener('click', function () {
+    input.value = '';
+    clearBtn.hidden = true;
+    state.query = '';
+    applyFilters();
+    input.focus();
+  });
+
+  // Risk pill'leri
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      pills.forEach(p => {
+        p.classList.remove('is-active');
+        p.setAttribute('aria-checked', 'false');
+      });
+      pill.classList.add('is-active');
+      pill.setAttribute('aria-checked', 'true');
+      state.risk = pill.dataset.filterRisk;
+      applyFilters();
+    });
+  });
+
+  // Sıralama
+  sortSelect.addEventListener('change', function () {
+    state.sort = sortSelect.value;
+    applyFilters();
+  });
+
+  // Ctrl/Cmd + F yerine "/" tuşu da inputa odaklasın
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== input) {
+      e.preventDefault();
+      input.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === input) {
+      input.value = '';
+      state.query = '';
+      clearBtn.hidden = true;
+      applyFilters();
+      input.blur();
+    }
+  });
+
+  // İlk çalıştırma: varsayılan sıralamayı uygula
+  applyFilters();
+})();
+</script>
+{% endif %}
+{% endblock %}

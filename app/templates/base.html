@@ -1,0 +1,162 @@
+{# -----------------------------------------------------------
+   base.html — Tüm sayfaların paylaştığı temel iskelet
+   Üye 4 (Arayüz)
+   ----------------------------------------------------------- #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="KVKK ve GDPR uyumluluk durumunu otomatik analiz eden AI destekli web aracı." />
+
+  {# FOUC önleme: CSS yüklenmeden önce tema kararını uygula.
+     Bu script senkron çalışır — hiçbir flash olmaz. #}
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.setAttribute('data-theme', stored);
+        }
+        // 'auto' veya null → attribute yok → @media (prefers-color-scheme) devreye girer
+      } catch (e) { /* localStorage erişilemezse sessizce devam */ }
+    })();
+  </script>
+
+  <title>{% block title %}KVKK / GDPR AI Checker{% endblock %}</title>
+
+  {# Google Fonts: Manrope (display) + Inter Tight (body) #}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  {# Ana stil #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+  {# ------------------- NAVBAR ------------------- #}
+  <header class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="brand" aria-label="Anasayfa">
+        <span class="brand-mark" aria-hidden="true">K/G</span>
+        <span>KVKK&nbsp;/&nbsp;GDPR&nbsp;Checker</span>
+      </a>
+
+      <nav aria-label="Ana menü">
+        <ul class="nav-links">
+          <li>
+            <a href="/" class="{% block nav_home_active %}{% endblock %}">Anasayfa</a>
+          </li>
+          <li>
+            <a href="/history" class="{% block nav_history_active %}{% endblock %}">Geçmiş Taramalar</a>
+          </li>
+          <li>
+            <button type="button" id="theme-toggle" class="theme-toggle"
+                    aria-label="Temayı değiştir" title="Temayı değiştir">
+              {# Üç ikon: light, dark, auto. CSS, data-theme'e göre birini gösterir. #}
+              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+              </svg>
+              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg class="icon-auto" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 3 a9 9 0 0 1 0 18 z" fill="currentColor"></path>
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  {# ------------------- ANA İÇERİK ------------------- #}
+  <main>
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  {# ------------------- FOOTER ------------------- #}
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <span>© {{ 2026 }} KVKK / GDPR AI Checker — Akademik & teknik ön değerlendirme aracı.</span>
+        <span class="text-muted">Hukuki danışmanlık yerine geçmez.</span>
+      </div>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+
+  {# Tema toggle JS — light → dark → auto → light döngüsü #}
+  <script>
+    (function () {
+      'use strict';
+      var btn = document.getElementById('theme-toggle');
+      if (!btn) return;
+
+      var root = document.documentElement;
+      var order = ['light', 'dark', 'auto'];
+      var labels = {
+        light: 'Açık tema (Koyu temaya geçmek için tıkla)',
+        dark:  'Koyu tema (Otomatik moda geçmek için tıkla)',
+        auto:  'Otomatik tema (Açık temaya geçmek için tıkla)'
+      };
+
+      function getCurrent() {
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) {}
+        if (stored === 'light' || stored === 'dark') return stored;
+        return 'auto';
+      }
+
+      function applyState(state) {
+        if (state === 'auto') {
+          root.removeAttribute('data-theme');
+          try { localStorage.removeItem('theme'); } catch (e) {}
+        } else {
+          root.setAttribute('data-theme', state);
+          try { localStorage.setItem('theme', state); } catch (e) {}
+        }
+        root.setAttribute('data-theme-mode', state);  // ikonları göstermek için
+        btn.setAttribute('aria-label', labels[state]);
+        btn.setAttribute('title', labels[state]);
+      }
+
+      // Başlangıç durumu (head script bunu çoktan uygulamış olabilir)
+      applyState(getCurrent());
+
+      // Tıklayınca sıradakine geç
+      btn.addEventListener('click', function () {
+        var current = getCurrent();
+        var next = order[(order.indexOf(current) + 1) % order.length];
+        applyState(next);
+      });
+
+      // Auto modundayken sistem teması değişirse anında yansıt
+      if (window.matchMedia) {
+        var mql = window.matchMedia('(prefers-color-scheme: dark)');
+        var handler = function () {
+          if (getCurrent() === 'auto') {
+            // attribute zaten yok, sadece browser repaint olsun yeter — yapılacak iş yok
+          }
+        };
+        if (mql.addEventListener) mql.addEventListener('change', handler);
+      }
+    })();
+  </script>
+</body>
+</html>

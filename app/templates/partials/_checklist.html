@@ -1,0 +1,79 @@
+{# -----------------------------------------------------------
+   partials/_checklist.html
+   Tekrar kullanılabilir kontrol listesi.
+
+   Çağırma örnekleri:
+   {% with items=kvkk_items, title='KVKK Maddeleri', accent='primary' %}
+     {% include 'partials/_checklist.html' %}
+   {% endwith %}
+
+   Bekler:
+   - items: { item_label, status (1/0) } listesi
+   - title: bölüm başlığı
+   - accent: 'primary' veya 'accent' (opsiyonel, sadece görsel etiket için)
+   ----------------------------------------------------------- #}
+
+{% set total   = items|length %}
+{% set passed  = items|selectattr('status', 'equalto', 1)|list|length if total > 0 else 0 %}
+{% set failed  = total - passed %}
+
+<section class="card animate-in" aria-labelledby="checklist-{{ title|replace(' ', '-')|lower }}">
+
+  <div class="card-header">
+    <h3 class="card-title" id="checklist-{{ title|replace(' ', '-')|lower }}">{{ title }}</h3>
+
+    <div class="flex gap-2" style="flex-wrap: wrap;">
+      <span class="badge badge-success" aria-label="Başarılı madde sayısı">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        {{ passed }} başarılı
+      </span>
+      <span class="badge badge-danger" aria-label="Eksik madde sayısı">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        {{ failed }} eksik
+      </span>
+    </div>
+  </div>
+
+  {% if total == 0 %}
+    <div class="empty-state">
+      <p class="text-muted mb-0">Bu kategori için kontrol maddesi bulunamadı.</p>
+    </div>
+  {% else %}
+    <ul class="checklist">
+      {% for item in items %}
+        <li class="checklist-item {% if item.status == 1 %}is-success{% else %}is-failure{% endif %}">
+
+          <span class="checklist-icon {% if item.status == 1 %}is-success{% else %}is-failure{% endif %}"
+                aria-hidden="true">
+            {% if item.status == 1 %}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            {% else %}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            {% endif %}
+          </span>
+
+          <span class="checklist-label">{{ item.item_label }}</span>
+
+          <span class="visually-hidden">
+            {{ 'Karşılandı' if item.status == 1 else 'Eksik' }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+</section>
