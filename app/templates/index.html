@@ -1,0 +1,161 @@
+{# -----------------------------------------------------------
+   index.html — Anasayfa
+   Üye 4 (Arayüz)
+
+   Sözleşme:
+   - GET /
+   - Yalnızca {{ error }} değişkeni gelir (opsiyonel).
+   - Form POST /scan adresine bir 'url' alanı gönderir.
+   ----------------------------------------------------------- #}
+{% extends "base.html" %}
+
+{% block title %}Anasayfa · KVKK / GDPR AI Checker{% endblock %}
+
+{# Navbar'daki "Anasayfa" linkini aktif yap #}
+{% block nav_home_active %}active{% endblock %}
+
+{% block content %}
+
+  {# ---------- HERO + FORM ---------- #}
+  <section class="hero animate-in" aria-labelledby="hero-title">
+    <span class="hero-eyebrow">
+      <span aria-hidden="true">●</span>
+      AI destekli uyumluluk taraması
+    </span>
+
+    <h1 id="hero-title">
+      Web siteni <span class="accent">KVKK ve GDPR</span> açısından saniyeler içinde değerlendir
+    </h1>
+
+    <p class="lead">
+      Gizlilik politikası, çerez bildirimi, açık rıza ve aydınlatma metni gibi
+      temel uyumluluk kriterlerini otomatik kontrol eder; eksikleri yapay zekâ destekli
+      Türkçe önerilerle raporlar.
+    </p>
+
+    <div class="hero-form-wrap">
+
+      {# ---------- Hata uyarısı (yalnızca error varsa) ---------- #}
+      {% if error %}
+        <div class="alert alert-error animate-in" role="alert" aria-live="polite">
+          <span class="alert-icon" aria-hidden="true">!</span>
+          <div>
+            <strong>İşlem gerçekleştirilemedi.</strong>
+            <div>{{ error }}</div>
+          </div>
+        </div>
+      {% endif %}
+
+      {# ---------- URL Formu ---------- #}
+      <form class="form-card animate-in delay-1"
+            action="/scan"
+            method="POST"
+            novalidate
+            aria-labelledby="form-title">
+
+        <div class="form-group">
+          <label for="url-input" class="form-label" id="form-title">
+            Taranacak web sitesi adresi
+          </label>
+
+          <div class="url-form">
+            <input
+              type="url"
+              id="url-input"
+              name="url"
+              class="form-input"
+              placeholder="https://ornek-site.com"
+              autocomplete="url"
+              required
+              aria-describedby="url-help"
+            />
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+              <span class="btn-label">Taramayı Başlat</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <small id="url-help" class="form-help">
+            Tam URL girmeniz önerilir (örnek: <code>https://siteadi.com</code>). Tarama yaklaşık 5–15 saniye sürebilir.
+          </small>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  {# ---------- FEATURE ŞERİDİ ---------- #}
+  <section class="section animate-in delay-2" aria-label="Sistemin yetenekleri">
+    <div class="features">
+
+      <article class="feature card">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4" />
+            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+          </svg>
+        </div>
+        <h4>Otomatik Kriter Kontrolü</h4>
+        <p>Gizlilik politikası, çerez bildirimi, KVKK aydınlatma ve açık rıza maddelerini sayfa içinde tarar.</p>
+      </article>
+
+      <article class="feature card">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18" />
+            <path d="M7 14l4-4 4 4 5-7" />
+          </svg>
+        </div>
+        <h4>Skor ve Risk Seviyesi</h4>
+        <p>KVKK ve GDPR için ayrı uyumluluk skoru hesaplar; düşük/orta/yüksek risk değerlendirmesi sunar.</p>
+      </article>
+
+      <article class="feature card">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l2.39 4.84L20 8l-4 3.9.94 5.47L12 14.77 7.06 17.37 8 11.9 4 8l5.61-1.16L12 2z" />
+          </svg>
+        </div>
+        <h4>Yapay Zekâ Önerileri</h4>
+        <p>Eksik maddelerin nasıl düzeltileceğine dair LLM tabanlı, Türkçe ve uygulanabilir öneriler üretir.</p>
+      </article>
+
+    </div>
+  </section>
+
+{% endblock %}
+
+{# ---------- SAYFA-ÖZEL SCRIPT ---------- #}
+{% block scripts %}
+<script>
+  // Submit'e basıldığında çift gönderim engelle + spinner göster.
+  (function () {
+    const form = document.querySelector('form[action="/scan"]');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      const btn   = document.getElementById('submit-btn');
+      const input = document.getElementById('url-input');
+
+      // Basit istemci tarafı doğrulama (sunucu tarafında ayrıca yapılmalı)
+      if (!input.value.trim()) {
+        e.preventDefault();
+        input.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" aria-hidden="true"></span><span>Taranıyor…</span>';
+    });
+  })();
+</script>
+{% endblock %}

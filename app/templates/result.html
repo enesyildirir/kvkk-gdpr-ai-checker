@@ -1,0 +1,96 @@
+{# -----------------------------------------------------------
+   result.html — POST /scan sonrası anlık sonuç sayfası
+
+   Sözleşme:
+   - {{ scan }}        : scan objesi (id, url, kvkk_score, gdpr_score,
+                                       risk_level, llm_suggestions, created_at)
+   - {{ kvkk_items }}  : { item_label, status } listesi
+   - {{ gdpr_items }}  : { item_label, status } listesi
+   ----------------------------------------------------------- #}
+{% extends "base.html" %}
+
+{% block title %}Tarama Sonucu · KVKK / GDPR AI Checker{% endblock %}
+
+{% block content %}
+
+  {# Başlık şeridi — "yeni tarama yapıldı" bildirimi #}
+  <div class="page-header animate-in">
+    <div>
+      <span class="hero-eyebrow" style="margin-bottom: var(--space-3);">
+        <span aria-hidden="true">●</span>
+        Tarama tamamlandı
+      </span>
+      <h1 style="font-size: clamp(1.5rem, 3vw, 2.25rem); margin-bottom: var(--space-2);">
+        Sonuç Raporu
+      </h1>
+      <p class="text-soft mb-0">
+        Aşağıda taranan adresin KVKK ve GDPR uyumluluk değerlendirmesini bulabilirsiniz.
+      </p>
+    </div>
+
+    <div class="flex gap-3" style="flex-wrap: wrap;">
+      <a href="/" class="btn btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Yeni Tarama
+      </a>
+      <button type="button" class="btn btn-secondary" onclick="window.print()" aria-label="Raporu yazdır veya PDF olarak kaydet">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Yazdır / PDF
+      </button>
+      {% if scan.id %}
+        <a href="/scan/{{ scan.id }}" class="btn btn-ghost">
+          Kalıcı bağlantı
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {# 1) Üst özet — URL, tarih, risk pili, skor kartları #}
+  {% include 'partials/_scan_overview.html' %}
+
+  {# 2) KVKK & GDPR kontrol listeleri — yan yana #}
+  <section class="section mt-6">
+    <div class="grid grid-2">
+
+      {% with items=kvkk_items, title='KVKK Maddeleri' %}
+        {% include 'partials/_checklist.html' %}
+      {% endwith %}
+
+      {% with items=gdpr_items, title='GDPR Maddeleri' %}
+        {% include 'partials/_checklist.html' %}
+      {% endwith %}
+
+    </div>
+  </section>
+
+  {# 3) LLM önerileri #}
+  <section class="section mt-6">
+    {% include 'partials/_llm_suggestions.html' %}
+  </section>
+
+  {# 4) Sadece yazdırırken görünen rapor künyesi #}
+  <div class="print-footer print-only">
+    <p style="margin: 0 0 4pt 0;">
+      <strong>KVKK / GDPR Uyumluluk Raporu</strong>
+      &nbsp;&middot;&nbsp; Tarama&nbsp;ID: {{ scan.id }}
+      &nbsp;&middot;&nbsp;
+      {% if scan.created_at.strftime is defined %}
+        {{ scan.created_at.strftime('%d.%m.%Y %H:%M') }}
+      {% else %}
+        {{ scan.created_at }}
+      {% endif %}
+    </p>
+    <p style="margin: 0;">
+      Bu rapor otomatik üretilmiş bir teknik ön değerlendirmedir. Hukuki danışmanlık yerine geçmez.
+    </p>
+  </div>
+
+{% endblock %}

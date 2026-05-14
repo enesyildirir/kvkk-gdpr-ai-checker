@@ -1,0 +1,29 @@
+{# -----------------------------------------------------------
+   partials/_llm_suggestions.html
+   AI tarafından üretilmiş Türkçe iyileştirme önerilerini gösterir.
+
+   Bekler: scan.llm_suggestions (string)
+   ----------------------------------------------------------- #}
+
+<section class="card animate-in" aria-labelledby="llm-title">
+
+  <div class="card-header">
+    <h3 class="card-title" id="llm-title">
+      <span class="ai-mark" aria-hidden="true">AI</span>
+      Yapay Zekâ Önerileri
+    </h3>
+    <span class="badge badge-info">Otomatik üretildi</span>
+  </div>
+
+  {% if scan.llm_suggestions and scan.llm_suggestions|trim %}
+    <div class="suggestion-box">{{ scan.llm_suggestions }}</div>
+    <small class="text-muted mt-4" style="display:block;">
+      Bu öneriler bir dil modeli tarafından üretildi, hukuki danışmanlık yerine geçmez.
+    </small>
+  {% else %}
+    <div class="empty-state">
+      <p class="text-muted mb-0">Bu tarama için henüz AI önerisi üretilmemiş.</p>
+    </div>
+  {% endif %}
+
+</section>

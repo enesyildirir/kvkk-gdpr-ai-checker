@@ -1,0 +1,1661 @@
+/* =========================================================
+   KVKK / GDPR AI Checker — Global Stylesheet
+   Author: Üye 4 (Arayüz)
+   ---------------------------------------------------------
+   Bölümler:
+   01. CSS Değişkenleri (Design Tokens)
+   02. Reset & Temel
+   03. Tipografi
+   04. Layout & Container
+   05. Navbar & Footer
+   06. Form Bileşenleri
+   07. Butonlar
+   08. Kartlar
+   09. Skor & Risk Rozetleri
+   10. Kontrol Listesi (Checklist) Bileşenleri
+   11. Tablo (history)
+   12. Yardımcı Sınıflar
+   13. Animasyonlar
+   14. Responsive (Mobile)
+   ========================================================= */
+
+
+/* ---------- 01. CSS Değişkenleri ---------- */
+:root {
+  /* Renk Paleti — sakin, kurumsal, "compliance" hissi */
+  --bg:            #f7f8fb;
+  --bg-elevated:   #ffffff;
+  --surface:       #ffffff;
+  --surface-alt:   #f2f4f9;
+  --border:        #e4e7ef;
+  --border-strong: #cfd4e0;
+
+  --text:          #11172a;
+  --text-soft:     #4a5167;
+  --text-muted:    #7a8198;
+
+  --primary:       #2f5bea;          /* derin mavi — ana aksiyon */
+  --primary-hover: #234bd0;
+  --primary-soft:  #e8eefd;
+
+  --accent:        #f59e0b;          /* sıcak amber — vurgu */
+  --accent-soft:   #fef3e2;
+
+  --success:       #10b981;
+  --success-soft:  #e6f7f1;
+  --danger:        #ef4444;
+  --danger-soft:   #fdecec;
+  --warning:       #f59e0b;
+  --warning-soft:  #fef3e2;
+
+  /* Tipografi */
+  --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-body:    'Inter Tight', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(17, 23, 42, 0.04), 0 1px 1px rgba(17, 23, 42, 0.03);
+  --shadow-md: 0 4px 12px rgba(17, 23, 42, 0.06), 0 2px 4px rgba(17, 23, 42, 0.04);
+  --shadow-lg: 0 16px 40px rgba(17, 23, 42, 0.10), 0 4px 12px rgba(17, 23, 42, 0.05);
+  --shadow-focus: 0 0 0 4px rgba(47, 91, 234, 0.15);
+
+  --container: 1120px;
+  --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- 01b. Karanlık Tema Token'ları ----------
+   Strateji:
+   - Kullanıcı manuel seçim yapmadıysa sistem temasını takip eder
+     (prefers-color-scheme: dark).
+   - Kullanıcı tema seçtiyse <html data-theme="..."> ile zorla
+     ezilir.
+   - data-theme="light"  → her zaman açık (sistem koyu olsa da)
+   - data-theme="dark"   → her zaman koyu (sistem açık olsa da)
+   - data-theme yok      → sistemi takip et
+-------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:            #0f1320;
+    --bg-elevated:   #161b2d;
+    --surface:       #1a2034;
+    --surface-alt:   #232a42;
+    --border:        #2a3250;
+    --border-strong: #3a4366;
+
+    --text:          #eaedf5;
+    --text-soft:     #b1b8cc;
+    --text-muted:    #7c849c;
+
+    --primary:       #6b8aff;          /* daha açık mavi — koyu zeminde okunaklı */
+    --primary-hover: #8aa3ff;
+    --primary-soft:  rgba(107, 138, 255, 0.15);
+
+    --accent:        #fbbf24;
+    --accent-soft:   rgba(251, 191, 36, 0.15);
+
+    --success:       #34d399;
+    --success-soft:  rgba(52, 211, 153, 0.15);
+    --danger:        #f87171;
+    --danger-soft:   rgba(248, 113, 113, 0.15);
+    --warning:       #fbbf24;
+    --warning-soft:  rgba(251, 191, 36, 0.15);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px 1px rgba(0, 0, 0, 0.20);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.30);
+    --shadow-focus: 0 0 0 4px rgba(107, 138, 255, 0.30);
+  }
+}
+
+/* Manuel dark override — sistem ne derse desin koyu */
+:root[data-theme="dark"] {
+  --bg:            #0f1320;
+  --bg-elevated:   #161b2d;
+  --surface:       #1a2034;
+  --surface-alt:   #232a42;
+  --border:        #2a3250;
+  --border-strong: #3a4366;
+
+  --text:          #eaedf5;
+  --text-soft:     #b1b8cc;
+  --text-muted:    #7c849c;
+
+  --primary:       #6b8aff;
+  --primary-hover: #8aa3ff;
+  --primary-soft:  rgba(107, 138, 255, 0.15);
+
+  --accent:        #fbbf24;
+  --accent-soft:   rgba(251, 191, 36, 0.15);
+
+  --success:       #34d399;
+  --success-soft:  rgba(52, 211, 153, 0.15);
+  --danger:        #f87171;
+  --danger-soft:   rgba(248, 113, 113, 0.15);
+  --warning:       #fbbf24;
+  --warning-soft:  rgba(251, 191, 36, 0.15);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px 1px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.30);
+  --shadow-focus: 0 0 0 4px rgba(107, 138, 255, 0.30);
+}
+
+/* Tema geçişlerinde yumuşak animasyon —
+   ama renk-only özelliklerde, layout değil */
+html, body, .navbar, .footer, .card, .form-card, .form-input, .form-select,
+.btn, .table, .table th, .table td, .checklist-item, .stats-strip,
+.empty-card, .scan-card, .filter-bar, .filter-pill, .filter-input,
+.suggestion-box, .score-card, .ring-track {
+  transition:
+    background-color 240ms ease,
+    border-color     240ms ease,
+    color            240ms ease;
+}
+
+/* ---------- Tema Toggle Butonu ---------- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--surface-alt);
+}
+.theme-toggle:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+/* Üç ikon — varsayılan: hepsi gizli */
+.theme-toggle svg { display: none; }
+
+/* Hangi ikon görünür?
+   data-theme-mode HTML'e JS tarafından eklenir.
+   - light  → güneş
+   - dark   → ay
+   - auto   → yarım daire (sistem)  */
+:root[data-theme-mode="light"] .theme-toggle .icon-sun  { display: block; }
+:root[data-theme-mode="dark"]  .theme-toggle .icon-moon { display: block; }
+:root[data-theme-mode="auto"]  .theme-toggle .icon-auto { display: block; }
+
+/* Fallback: JS yüklenmeden önce / hiç çalışmazsa güneşi göster */
+:root:not([data-theme-mode]) .theme-toggle .icon-sun { display: block; }
+
+
+/* ---------- Dark Mode İnce Ayarlar ----------
+   Bazı renk değerleri tek başına token swap'le tam istediğimiz
+   görünüme ulaşmıyor. Bu ufak override'lar dark'ta dengeyi sağlar.
+--------------------------------------------------------- */
+
+/* Body gradient: dark'ta daha güçlü, daha "ortam" hissi veren */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body {
+    background-image:
+      radial-gradient(1200px 600px at 80% -10%, rgba(107, 138, 255, 0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(251, 191, 36, 0.05),  transparent 55%);
+  }
+}
+:root[data-theme="dark"] body {
+  background-image:
+    radial-gradient(1200px 600px at 80% -10%, rgba(107, 138, 255, 0.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(251, 191, 36, 0.05),  transparent 55%);
+}
+
+/* Navbar — dark'ta blur arkaplanı şeffaf koyu */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .navbar {
+    background: rgba(15, 19, 32, 0.80);
+  }
+}
+:root[data-theme="dark"] .navbar {
+  background: rgba(15, 19, 32, 0.80);
+}
+
+/* Badge'ler — dark'ta arka plan zaten rgba olduğu için text rengini ayarla */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .badge-success,
+  :root:not([data-theme="light"]) .risk-low { color: #6ee7b7; }
+  :root:not([data-theme="light"]) .badge-danger,
+  :root:not([data-theme="light"]) .risk-high { color: #fca5a5; }
+  :root:not([data-theme="light"]) .badge-warning,
+  :root:not([data-theme="light"]) .risk-medium { color: #fcd34d; }
+  :root:not([data-theme="light"]) .badge-info { color: #93b4ff; }
+
+  :root:not([data-theme="light"]) .score-chip.is-good { color: #6ee7b7; }
+  :root:not([data-theme="light"]) .score-chip.is-mid  { color: #fcd34d; }
+  :root:not([data-theme="light"]) .score-chip.is-bad  { color: #fca5a5; }
+
+  :root:not([data-theme="light"]) .ring-wrap[data-state="good"] .ring-number { color: #6ee7b7; }
+  :root:not([data-theme="light"]) .ring-wrap[data-state="mid"]  .ring-number { color: #fcd34d; }
+  :root:not([data-theme="light"]) .ring-wrap[data-state="bad"]  .ring-number { color: #fca5a5; }
+}
+:root[data-theme="dark"] .badge-success,
+:root[data-theme="dark"] .risk-low { color: #6ee7b7; }
+:root[data-theme="dark"] .badge-danger,
+:root[data-theme="dark"] .risk-high { color: #fca5a5; }
+:root[data-theme="dark"] .badge-warning,
+:root[data-theme="dark"] .risk-medium { color: #fcd34d; }
+:root[data-theme="dark"] .badge-info { color: #93b4ff; }
+
+:root[data-theme="dark"] .score-chip.is-good { color: #6ee7b7; }
+:root[data-theme="dark"] .score-chip.is-mid  { color: #fcd34d; }
+:root[data-theme="dark"] .score-chip.is-bad  { color: #fca5a5; }
+
+:root[data-theme="dark"] .ring-wrap[data-state="good"] .ring-number { color: #6ee7b7; }
+:root[data-theme="dark"] .ring-wrap[data-state="mid"]  .ring-number { color: #fcd34d; }
+:root[data-theme="dark"] .ring-wrap[data-state="bad"]  .ring-number { color: #fca5a5; }
+
+/* Hero başlığındaki gradient text — dark'ta açık mavi tonları */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero h1 .accent {
+    background: linear-gradient(135deg, #8aa3ff 0%, #b1c3ff 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+:root[data-theme="dark"] .hero h1 .accent {
+  background: linear-gradient(135deg, #8aa3ff 0%, #b1c3ff 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Filtre dropdown'ındaki ok ikonu rengi dark'ta görünür olsun */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .filter-select {
+    background-image:
+      url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b1b8cc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  }
+}
+:root[data-theme="dark"] .filter-select {
+  background-image:
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b1b8cc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* Primary butonun yazısı dark'ta her zaman beyaz kalsın
+   (token swap'ten etkilenmesin — dark mode'da bile primary mavi üstünde beyaz okunaklı) */
+.btn-primary { color: #fff; }
+.btn-primary:hover { color: #fff; }
+
+/* Form input placeholder dark'ta daha soluk */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .form-input::placeholder { color: var(--text-muted); }
+}
+:root[data-theme="dark"] .form-input::placeholder { color: var(--text-muted); }
+
+
+/* ---------- 02. Reset & Temel ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  background-image:
+    radial-gradient(1200px 600px at 80% -10%, rgba(47, 91, 234, 0.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(245, 158, 11, 0.05), transparent 55%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+img { max-width: 100%; display: block; }
+a { color: var(--primary); text-decoration: none; transition: color var(--transition); }
+a:hover { color: var(--primary-hover); }
+
+/* ---------- 03. Tipografi ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 var(--space-4);
+}
+
+h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.03em; }
+h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1rem; }
+
+p { margin: 0 0 var(--space-4); color: var(--text-soft); }
+small { color: var(--text-muted); font-size: 0.875rem; }
+
+.lead {
+  font-size: 1.125rem;
+  color: var(--text-soft);
+  max-width: 60ch;
+}
+
+/* ---------- 04. Layout & Container ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+main {
+  flex: 1;
+  padding: var(--space-7) 0;
+}
+
+.section { margin-bottom: var(--space-7); }
+
+/* ---------- 05. Navbar & Footer ---------- */
+.navbar {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  max-width: var(--container);
+  margin: 0 auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--primary) 0%, #5b7cff 100%);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-md);
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: var(--text-soft);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: var(--space-2) 0;
+  position: relative;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.nav-links a.active {
+  color: var(--text);
+}
+
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  padding: var(--space-5) 0;
+  margin-top: auto;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* ---------- 06. Form Bileşenleri ---------- */
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+
+.form-group { margin-bottom: var(--space-4); }
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+  letter-spacing: 0.01em;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px var(--space-4);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.form-input::placeholder { color: var(--text-muted); }
+
+.form-input:hover { border-color: var(--border-strong); }
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-help {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* URL input grup — input + buton yan yana */
+.url-form {
+  display: flex;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.url-form .form-input { flex: 1; }
+
+/* ---------- 07. Butonlar ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 14px var(--space-5);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible { box-shadow: var(--shadow-focus); outline: none; }
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover {
+  background: var(--surface-alt);
+  border-color: var(--text-muted);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-soft);
+}
+.btn-ghost:hover { background: var(--surface-alt); color: var(--text); }
+
+.btn-block { width: 100%; }
+
+/* ---------- 08. Kartlar ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+/* Grid for cards */
+.grid {
+  display: grid;
+  gap: var(--space-5);
+}
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---------- 09. Skor & Risk Rozetleri ---------- */
+.score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.score-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-3);
+}
+
+.score-value {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+
+.score-value .unit {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badge-success { background: var(--success-soft); color: #047857; }
+.badge-danger  { background: var(--danger-soft);  color: #b91c1c; }
+.badge-warning { background: var(--warning-soft); color: #b45309; }
+.badge-info    { background: var(--primary-soft); color: var(--primary-hover); }
+.badge-neutral { background: var(--surface-alt);  color: var(--text-soft); }
+
+.risk-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.risk-pill::before {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.risk-low    { background: var(--success-soft); color: #047857; }
+.risk-low::before { background: var(--success); }
+.risk-medium { background: var(--warning-soft); color: #b45309; }
+.risk-medium::before { background: var(--warning); }
+.risk-high   { background: var(--danger-soft);  color: #b91c1c; }
+.risk-high::before { background: var(--danger); }
+
+/* ---------- 10. Kontrol Listesi (Checklist) ---------- */
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-alt);
+  border-radius: var(--r-md);
+  border-left: 3px solid transparent;
+  transition: background var(--transition);
+}
+
+.checklist-item:hover { background: var(--bg-elevated); }
+
+.checklist-item.is-success {
+  border-left-color: var(--success);
+}
+.checklist-item.is-failure {
+  border-left-color: var(--danger);
+}
+
+.checklist-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #fff;
+}
+.checklist-icon.is-success { background: var(--success); }
+.checklist-icon.is-failure { background: var(--danger); }
+
+.checklist-label {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+/* ---------- 11. Tablo (History) ---------- */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--space-4);
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.table tr:last-child td { border-bottom: none; }
+
+.table tr:hover td { background: var(--bg); }
+
+.table .url-cell {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- 12. Yardımcı Sınıflar ---------- */
+.text-center { text-align: center; }
+.text-muted  { color: var(--text-muted); }
+.text-soft   { color: var(--text-soft); }
+.mt-0 { margin-top: 0; }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mb-0 { margin-bottom: 0; }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+/* Alert / Hata kutusu */
+.alert {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border-radius: var(--r-md);
+  margin-bottom: var(--space-5);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+}
+.alert-error {
+  background: var(--danger-soft);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #991b1b;
+}
+.alert-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+/* Code/pre — LLM önerileri için */
+.suggestion-box {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--space-5);
+  white-space: pre-wrap;
+  font-family: var(--font-body);
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* ---------- 13. Animasyonlar ---------- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeUp 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.delay-1 { animation-delay: 80ms; }
+.delay-2 { animation-delay: 160ms; }
+.delay-3 { animation-delay: 240ms; }
+.delay-4 { animation-delay: 320ms; }
+
+/* Yumuşak spinner — submit sırasında kullanılabilir */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 14. Hero (anasayfa) ---------- */
+.hero {
+  padding: var(--space-8) 0 var(--space-7);
+  text-align: center;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 14px;
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-5);
+}
+
+.hero h1 {
+  max-width: 18ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(135deg, var(--primary) 0%, #6b8aff 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero .lead {
+  margin: 0 auto var(--space-6);
+  text-align: center;
+}
+
+.hero-form-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Özellik şeridi */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+
+.feature {
+  text-align: center;
+  padding: var(--space-5);
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto var(--space-3);
+  border-radius: var(--r-md);
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.feature h4 {
+  font-size: 1rem;
+  margin-bottom: var(--space-2);
+}
+
+.feature p {
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--text-soft);
+}
+
+/* ---------- 16. Yeni Bileşenler (result / history / scan_detail) ---------- */
+
+/* Sayfa başlığı şeridi */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+/* Skor barı (score-card içinde — geriye dönük uyumluluk için tutuldu) */
+.score-bar {
+  height: 6px;
+  background: var(--surface-alt);
+  border-radius: 999px;
+  margin-top: var(--space-4);
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Circular progress halkası ---------- */
+
+.score-card-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+}
+
+.ring-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.ring-svg {
+  width: 100%;
+  height: 100%;
+  /* Halka çizgileri "currentColor"u takip eder; rengi data-state ile yöneteceğiz */
+}
+
+/* Arka plan halkası — soluk gri */
+.ring-track {
+  stroke: var(--surface-alt);
+}
+
+/* Dolu halka — rengi data-state'e göre */
+.ring-progress {
+  /* İlk yükleme animasyonu: 0'dan değere yumuşak geçiş */
+  transition: stroke-dashoffset 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 0 0.5px currentColor);
+}
+
+/* State'e göre halka rengi */
+.ring-wrap[data-state="good"] .ring-progress { stroke: var(--success); color: var(--success); }
+.ring-wrap[data-state="mid"]  .ring-progress { stroke: var(--warning); color: var(--warning); }
+.ring-wrap[data-state="bad"]  .ring-progress { stroke: var(--danger);  color: var(--danger);  }
+
+/* State'e göre sayı rengi (subtle) */
+.ring-wrap[data-state="good"] .ring-number { color: #047857; }
+.ring-wrap[data-state="mid"]  .ring-number { color: #b45309; }
+.ring-wrap[data-state="bad"]  .ring-number { color: #b91c1c; }
+
+/* Halkanın ortasındaki sayı */
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.ring-number {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text);
+}
+
+.ring-suffix {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 2px;
+  letter-spacing: 0;
+}
+
+/* İlk yükleme animasyonu — sıfırdan değere büyüsün */
+@keyframes ringFill {
+  from { stroke-dashoffset: 326.726; }
+}
+.ring-progress {
+  animation: ringFill 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Mobilde daha küçük halka */
+@media (max-width: 480px) {
+  .ring-wrap { width: 130px; height: 130px; }
+  .ring-number { font-size: 2rem; }
+}
+
+/* Hareket azaltılmış kullanıcılar için animasyonu iptal et */
+@media (prefers-reduced-motion: reduce) {
+  .ring-progress { animation: none !important; transition: none !important; }
+}
+
+/* AI rozeti (LLM önerileri başlığı yanında) */
+.ai-mark {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, var(--primary) 0%, #6b8aff 100%);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  margin-right: var(--space-2);
+  vertical-align: middle;
+}
+
+/* Stat şeridi (history sayfası) */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+.stat-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.stat-value .unit {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* Skor "chip" — tablo hücrelerinde kompakt skor */
+.score-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+.score-chip.is-good { background: var(--success-soft); color: #047857; }
+.score-chip.is-mid  { background: var(--warning-soft); color: #b45309; }
+.score-chip.is-bad  { background: var(--danger-soft);  color: #b91c1c; }
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+  color: var(--text-muted);
+}
+.breadcrumb a { color: var(--text-soft); font-weight: 500; }
+.breadcrumb a:hover { color: var(--primary); }
+
+/* Boş durum kartları */
+.empty-card {
+  text-align: center;
+  padding: var(--space-7) var(--space-5);
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-lg);
+}
+.empty-illustration {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--r-lg);
+  background: var(--surface-alt);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.empty-state {
+  padding: var(--space-5);
+  text-align: center;
+  background: var(--surface-alt);
+  border-radius: var(--r-md);
+}
+
+/* Mobil için scan kartı (history) */
+.scan-cards {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.scan-card { display: block; color: var(--text); }
+.scan-card:hover { color: var(--text); }
+.scan-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+.scan-card-url {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  word-break: break-all;
+  color: var(--text-soft);
+  flex: 1;
+}
+.scan-card-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+.scan-card-body > div { display: flex; flex-direction: column; gap: 2px; }
+.scan-card-body strong { font-family: var(--font-display); font-size: 0.95rem; }
+
+/* Erişilebilirlik */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Responsive görünürlük yardımcıları */
+.hide-on-mobile { display: block; }
+.show-on-mobile { display: none; }
+
+
+/* ---------- 17. Responsive ---------- */
+@media (max-width: 860px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .features { grid-template-columns: 1fr; gap: var(--space-4); }
+  .url-form { flex-direction: column; }
+  .url-form .btn { width: 100%; }
+  .hero { padding: var(--space-6) 0 var(--space-5); }
+  .navbar-inner { padding: var(--space-3) var(--space-4); }
+  .footer-inner { flex-direction: column; text-align: center; }
+  .page-header { flex-direction: column; align-items: stretch; }
+  .stats-strip { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4); }
+  .stat-value { font-size: 1.5rem; }
+  .hide-on-mobile { display: none !important; }
+  .show-on-mobile { display: flex !important; }
+  .scan-cards { display: flex; }
+}
+
+@media (max-width: 480px) {
+  main { padding: var(--space-5) 0; }
+  .form-card { padding: var(--space-4); }
+  .score-value { font-size: 2.25rem; }
+  .nav-links { gap: var(--space-3); font-size: 0.875rem; }
+  .scan-card-body { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* =========================================================
+   17.5 Filtre Çubuğu (history sayfası)
+   ========================================================= */
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* Arama input grubu */
+.filter-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.filter-input {
+  padding-left: 40px !important;
+  padding-right: 36px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  margin: 0;
+}
+
+.filter-clear {
+  position: absolute;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-alt);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.filter-clear:hover {
+  background: var(--border);
+  color: var(--text);
+}
+.filter-clear:focus-visible { box-shadow: var(--shadow-focus); outline: none; }
+
+/* Risk pill grubu */
+.filter-pills {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-alt);
+  border-radius: var(--r-md);
+}
+
+.filter-pill {
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--text-soft);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.filter-pill:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.6);
+}
+.filter-pill.is-active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+.filter-pill:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+/* Sıralama dropdown */
+.filter-select {
+  padding: 10px 36px 10px var(--space-4) !important;
+  margin: 0;
+  min-width: 200px;
+  cursor: pointer;
+  /* Native ok ikonu yerine custom */
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a8198' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+/* Sonuç sayacı */
+.filter-summary {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  margin-bottom: var(--space-3);
+  padding: 0 var(--space-2);
+}
+
+/* Filtre çubuğu — responsive */
+@media (max-width: 860px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  .filter-pills {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-select { width: 100%; min-width: 0; }
+}
+
+
+/* =========================================================
+   18. PRINT / PDF STİLLERİ
+   ---------------------------------------------------------
+   Tarayıcı "Yazdır" diyaloğu (Ctrl+P) veya "PDF olarak
+   kaydet" seçeneği kullanıldığında devreye girer.
+   Hedef: yazıcı dostu, sade, profesyonel rapor görünümü.
+   ========================================================= */
+
+@media print {
+
+  /* Dark mode aktifse bile print'te light tokenları zorla.
+     Tokenları :root seviyesinde geri light'a çekiyoruz. */
+  :root,
+  :root[data-theme="dark"] {
+    --bg:            #ffffff !important;
+    --bg-elevated:   #ffffff !important;
+    --surface:       #ffffff !important;
+    --surface-alt:   #f5f5f5 !important;
+    --border:        #cccccc !important;
+    --border-strong: #999999 !important;
+    --text:          #000000 !important;
+    --text-soft:     #333333 !important;
+    --text-muted:    #555555 !important;
+  }
+
+  /* --- Sayfa düzeni --- */
+  @page {
+    size: A4;
+    margin: 18mm 15mm 20mm 15mm;
+  }
+
+  /* --- Genel sıfırlama --- */
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+    /* Renkleri zorla yazdır (Chrome/Edge bunu varsayılan olarak yapmaz) */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  body {
+    /* Hero arkaplanındaki radial-gradient'leri kaldır */
+    background-image: none !important;
+  }
+
+  /* --- Yazdırılmayacak öğeler --- */
+  .navbar,
+  .footer,
+  .nav-links,
+  .breadcrumb,
+  .page-header .btn,
+  .page-header .flex,
+  .hero-eyebrow,
+  .form-card,
+  .features,
+  .alert,
+  .stats-strip,
+  .scan-cards,
+  .filter-bar,
+  .filter-summary,
+  .theme-toggle,
+  .no-print,
+  button,
+  .btn {
+    display: none !important;
+  }
+
+  /* --- İçerik konteyneri yazdırırken tüm genişliği alır --- */
+  main { padding: 0 !important; }
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* --- Tipografi --- */
+  h1, h2, h3, h4 {
+    color: #000 !important;
+    page-break-after: avoid;
+    break-after: avoid;
+    letter-spacing: -0.01em;
+  }
+  h1 { font-size: 20pt; margin-bottom: 4pt; }
+  h2 { font-size: 15pt; }
+  h3 { font-size: 13pt; }
+  p, li { color: #1a1a1a !important; }
+  small { color: #555 !important; }
+
+  /* --- Linkler: URL'yi parantez içinde göster --- */
+  a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+  /* Sadece "harici" linkler için URL'yi yaz; iç linklere gerek yok */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #555;
+    word-break: break-all;
+  }
+  /* Brand, breadcrumb gibi iç linklerin URL'sini bastırma */
+  .navbar a::after,
+  .breadcrumb a::after { content: "" !important; }
+
+  /* --- Rapor başlık şeridi --- */
+  .page-header {
+    margin: 0 0 12pt 0;
+    padding-bottom: 8pt;
+    border-bottom: 2pt solid #000;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  .page-header h1 { font-size: 22pt; }
+  .page-header .text-soft { color: #444 !important; }
+
+  /* --- Kartlar: sade çerçeve --- */
+  .card {
+    border: 1pt solid #999 !important;
+    border-radius: 4pt;
+    padding: 10pt !important;
+    margin-bottom: 10pt !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .card-header {
+    border-bottom: 0.5pt solid #ccc !important;
+    padding-bottom: 6pt;
+    margin-bottom: 8pt;
+  }
+
+  /* --- Skor kartı --- */
+  .score-card {
+    border: 1pt solid #999 !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .score-label {
+    color: #555 !important;
+    font-size: 8pt;
+  }
+  .score-value {
+    color: #000 !important;
+    font-size: 28pt;
+  }
+  .score-bar {
+    background: #e5e5e5 !important;
+    border: 0.5pt solid #999;
+  }
+  /* Skor bar dolumu — orijinal renkleri koru ama yazıcı dostu hale getir */
+  .score-bar-fill { /* width inline style'dan korunur */ }
+
+  /* Circular progress halkası — yazdırırken kompakt ve net */
+  .score-card-ring {
+    padding: 8pt !important;
+  }
+  .ring-wrap {
+    width: 100pt !important;
+    height: 100pt !important;
+  }
+  .ring-track { stroke: #ddd !important; }
+  .ring-wrap[data-state="good"] .ring-progress { stroke: #2a8a6b !important; }
+  .ring-wrap[data-state="mid"]  .ring-progress { stroke: #c97a1a !important; }
+  .ring-wrap[data-state="bad"]  .ring-progress { stroke: #b91c1c !important; }
+  .ring-number { font-size: 20pt !important; color: #000 !important; }
+  .ring-suffix { font-size: 9pt !important; }
+  /* Animasyon yazdırırken görünmesin — son haliyle dursun */
+  .ring-progress { animation: none !important; }
+
+  /* --- Risk pili --- */
+  .risk-pill {
+    border: 1pt solid #000 !important;
+    padding: 3pt 8pt !important;
+    font-size: 9pt;
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .risk-pill::before {
+    border: 1pt solid #000;
+  }
+  .risk-low::before    { background: #fff !important; }
+  .risk-medium::before { background: #888 !important; }
+  .risk-high::before   { background: #000 !important; }
+
+  /* --- Badge'ler: minimal kenarlıklı --- */
+  .badge {
+    border: 0.5pt solid #666 !important;
+    color: #000 !important;
+    background: #fff !important;
+    padding: 2pt 6pt !important;
+    font-size: 8pt;
+  }
+
+  /* --- Checklist: arka plan kalksın, ikon kalsın --- */
+  .checklist-item {
+    background: transparent !important;
+    border-left: 2pt solid #000 !important;
+    padding: 4pt 8pt !important;
+    margin-bottom: 3pt !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .checklist-item.is-success { border-left-color: #555 !important; }
+  .checklist-item.is-failure { border-left-color: #000 !important; }
+
+  .checklist-icon {
+    border: 1pt solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    width: 14pt;
+    height: 14pt;
+  }
+  .checklist-icon.is-success { background: #fff !important; }
+  .checklist-icon.is-failure { background: #000 !important; color: #fff !important; }
+
+  /* --- 2 sütunlu grid yazdırırken de korunsun --- */
+  .grid-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10pt !important;
+  }
+
+  /* --- LLM önerileri --- */
+  .suggestion-box {
+    background: #fafafa !important;
+    border: 0.5pt solid #999 !important;
+    padding: 10pt !important;
+    font-size: 10pt;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .ai-mark {
+    background: #000 !important;
+    color: #fff !important;
+  }
+
+  /* --- Hero / form'lar yazdırırken görünmesin --- */
+  .hero { display: none !important; }
+
+  /* --- History tablosu (eğer yazdırılırsa) --- */
+  .table-wrap {
+    border: 1pt solid #999 !important;
+  }
+  .table th {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    border-bottom: 1pt solid #000 !important;
+  }
+  .table td {
+    border-bottom: 0.5pt solid #ccc !important;
+  }
+  .table tr { page-break-inside: avoid; }
+
+  /* --- Sayfa altına otomatik rapor künyesi --- */
+  .print-footer {
+    display: block !important;
+    margin-top: 16pt;
+    padding-top: 8pt;
+    border-top: 1pt solid #999;
+    font-size: 8pt;
+    color: #555 !important;
+    text-align: center;
+  }
+  .print-footer strong { color: #000 !important; }
+}
+
+/* Ekranda gizli, sadece yazdırırken görünen sınıf */
+.print-only { display: none; }
+@media print { .print-only { display: block !important; } }
